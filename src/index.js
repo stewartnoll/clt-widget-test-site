@@ -1,6 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+function parseParams() {
+    const search = location.search;
+    if(search && search.length > 0) {
+        return search.substring(1)
+            .split("&")
+            .reduce((p, c) => {
+            const kvp = c.split("=");
+            return {...p, [kvp[0]]: kvp[1] }
+        }, {});
+    }
+    return {};
+}
 const Frame = (props) => {
     const { 
         hostname,
@@ -26,21 +38,19 @@ const appStyles = {
 }
 
 const App = () => {
-    const params = new URL(document.location).searchParams;
-    const hostname = params.has("hostname") ? params.get("hostname") : "https://www.uship.com";
-    const clientId = params.has("clientId") ? params.get("clientId") : "1";
-    const height = params.has("height") ? params.get("height") : "800";
-    const width = params.has("width") ? params.get("width") : "500";
-    console.log(hostname, clientId, width, height)
+    const defaultParams = {
+        hostname: "https://www.uship.com",
+        clientId: "1",
+        height: "800",
+        width: "500"
+    }
+    const params = parseParams();
+    const frameProps =  {...defaultParams, ...params };
+    console.log(frameProps)
     return (
         <div style={appStyles}>
             <p>Partner Site</p>
-            <Frame 
-                hostname={hostname} 
-                clientId={clientId} 
-                height={height} 
-                width={width}
-            />
+            <Frame {...frameProps} />
         </div>
     )
 }
